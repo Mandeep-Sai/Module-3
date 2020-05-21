@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title>Books</title>
+    <style>
+      .col img{
+        height: 12rem !important;
+      }
+      .card{
+        position: relative;
+      }
+      /* .card .btn{
+        position: absolute;
+        bottom: 0px;
+        left: 30%;
+      } */
+      .card-title{
+        font-size: 18px;
+        
+      }
+      .col-4 img{
+        height: 8rem !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5"  id="books">
+      <div class=" my-2 my-lg-0">
+        <input type="text" id="search" placeholder="search" autocomplete="off" onkeyup="filterBooks()"> 
+      </div>
+      <div class="row row-cols-sm-1 row-cols-md-3 row-cols-lg-4 ">
+        
+      </div>
+    </div>
+    <div class="container" id="shoppingCart">
+      <p class="display-4 text-center" style="display: none;">Shopping Cart</p>
+    </div>
+    <script>
+      let AllBooks =[]
+      window.onload = () => {
+        fetch('https://striveschool.herokuapp.com/books?offset=0&limit=50')
+        .then(response => response.json())
+        .then(books =>{
+          AllBooks = books
+          // let books = parsedJson.slice(0,10)
+          // console.log(books)
+          books.forEach(book => {
+            let row = document.querySelector('.row')
+            row.innerHTML += `
+            <div class="col card my-2">
+              <img src="${book.img}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">${book.title}</h5>
+                <p class="card-text">Price : ${book.price}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">
+                      Add to Cart
+                    </button>
+                    <button type="button" onclick="skip()" class="btn btn-sm btn-outline-secondary skip">
+                      Skip
+                    </button>
+                  </div>
+                  <small class="text-muted">${book.asin}</small>
+                </div>
+              </div>
+            </div>
+            `
+          });
+          let btns = document.querySelectorAll('.btn')
+            for(let i=0;i<btns.length;i++){
+              btns[i].addEventListener('click', function(e){
+              let cardBody =  event.currentTarget.closest('.card-body')
+              let title = cardBody.children[0]
+              title.style.color = 'red'
+              let cart = document.querySelector('#shoppingCart')
+              let heading = document.querySelector('#shoppingCart p')
+              heading.style.display = 'block'
+              cart.innerHTML += `
+              <div class="row mt-3">
+                <div class="col-4">
+                    <img src="${books[i].img}" alt="">
+                </div>
+                <div class="col-4">
+                    <p>${books[i].title}</p>
+                </div>
+                <div class="col-2">
+                    <p>${books[i].price}</p>
+                </div>
+                <div class="col-2">
+                  <button type="button" class="btn btn-outline-danger" onclick="deleteRow()" style="margin-bottom:50%">Delete</button>
+                </div>
+              </div>
+              `
+            })
+            }
+        })
+      }
+      const filterBooks =() =>{
+              let val = document.querySelector('#search').value.toLowerCase()
+              if(val.length >3){
+                let booksContainer = document.querySelector('#books .row')
+                booksContainer.innerHTML = ''
+                let filteredBooks = AllBooks.filter(book => book.title.toLowerCase().includes(val))
+                filteredBooks.forEach(currentBook => {
+                  booksContainer.innerHTML +=`
+                  <div class="col card my-2">
+                     <img src="${currentBook.img}" class="card-img-top" alt="...">
+                     <div class="card-body">
+                    <h5 class="card-title">${currentBook.title}</h5>
+                    <p class="card-text">Price : ${currentBook.price}</p>
+                    <a href="#" class="btn btn-primary" >Add to Cart</a>
+              </div>
+            </div>
+                `
+                })               
+              }
+            }
+      function deleteRow(e){
+        let row = event.currentTarget.closest('.row')
+        row.remove()
+      }
+      function skip(e){
+        let card = event.currentTarget.closest('.card')
+        card.remove()
+      }
+    </script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>
