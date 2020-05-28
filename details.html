@@ -20,7 +20,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="./Day8-homework.html">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/D8-backoffice.html">Back Office</a>
@@ -30,37 +30,51 @@
       </div>
     </nav>
     <div class="container" id="content">
-      <p class="display-4 text-center">Products</p>
-      <div class="row row-cols-md-4 ">
-        
-      </div>
+      <p class="display-4 text-center">Product Info</p>
+      
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   
     <script src="Day8-homework.js"></script>
     <script>
-      function addCard(product){
-        return `
-        <div class="card">
-          <img src="${product.imageUrl}" class="card-img-top" style="height: 14rem;" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">${product.name}</h5>
-            <p class="card-text">Price : $ ${product.price}</p>
-            <p class="card-text">Brand :${product.brand}</p>
-            <p class="card-text">${product.description}</p>
-            <a href="details.html?id=${product._id}" class="btn btn-primary">More Info</a>
+      let url = 'https://striveschool.herokuapp.com/api/product/';
+      let id;
+      window.onload = async() =>{
+        let urlParams = new URLSearchParams(window.location.search);
+        id = urlParams.get('id');
+        // console.log(id)
+        let product = await getProduct(id);
+        let content = document.querySelector('#content');
+        content.innerHTML += `
+        <div class="row mt-5">
+          <div class="col">
+            <img src="${product.imageUrl}"style="width:400px;height:250px;" alt="">
+          </div>
+          <div class="col">
+            <p class="display-4">${product.name}</p>
+            <p>${product.brand}</p>
+            <p>$ ${product.price}</p>
+            <p> ${product.description}</p>
+            <div>
+              <button type="button" class="btn btn-info" onclick="edit()">Edit</button>
+              <button type="button" class="btn btn-danger" onclick="del()">Delete</button>
+            </div>
           </div>
         </div>
-        `
+        `      
       }
-      window.onload = async() =>{
-      let products = await getData()
-      let containerRow = document.querySelector('#content .row')
-      products.forEach(product => {
-        containerRow.innerHTML += addCard(product)
-      });
-    }
+      const del = async() =>{
+          const response = await deleteProduct(id)
+          if(response.ok){
+            alert('Deleted successfully')
+            location.href = 'Day8-homework.html'
+          }
+        }
+      const edit = async ()=>{
+        location.href = 'D8-backoffice.html?id='+id;
+        // const response = await editProduct(id)
+      }
     </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>

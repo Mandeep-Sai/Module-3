@@ -21,10 +21,28 @@ const sendData = async (productData) =>{
   return response
 }
 
-const deleteData = async() =>{
-  let response = await fetch('https://striveschool.herokuapp.com/api/product/',{
-    method:'DELETE',
-    // body: JSON.stringify(productData),
+const getProduct = async(id) =>{
+  let response = await fetch('https://striveschool.herokuapp.com/api/product/'+id,{
+    method :'GET',
+    headers : new Headers({
+      'Authorization': 'Basic dXNlcjE4OlEyejVWN2hFRlU2SktSckU='
+    })
+  })
+  return await response.json();
+}
+const deleteProduct = async(id) =>{
+  let response = await fetch('https://striveschool.herokuapp.com/api/product/'+id,{
+    method :'DELETE',
+    headers : new Headers({
+      'Authorization': 'Basic dXNlcjE4OlEyejVWN2hFRlU2SktSckU='
+    })
+  })
+  return response;
+}
+const editProduct = async (id,productData) =>{
+  let response = await fetch('https://striveschool.herokuapp.com/api/product/'+id,{
+    method:'PUT',
+    body: JSON.stringify(productData),
     headers : new Headers({
       'Authorization': 'Basic dXNlcjE4OlEyejVWN2hFRlU2SktSckU=',
       'Content-type': "application/json"
